@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, utils, ... }:
 
 with lib;
 
@@ -12,11 +12,6 @@ let
       nixosSubmodule = true;
     }
   );
-
-  activateUser = username: usercfg: ''
-    echo Activating home-manager configuration for ${username}
-    ${pkgs.su}/bin/su -l -c ${usercfg.home.activationPackage}/activate ${username}
-  '';
 
 in
 
@@ -32,15 +27,24 @@ in
   };
 
   config = mkIf (cfg.users != {}) {
-    systemd.services.home-manager = {
-      description = "Activate Home Manager environments";
-      wantedBy = [ "multi-user.target" ];
+    systemd.services = mapAttrs' (username: usercfg:
+      nameValuePair ("home-manager-${utils.escapeSystemdPath username}") {
+        description = "Home Manager environment for ${username}";
+        wantedBy = [ "multi-user.target" ];
 
-      serviceConfig = {
-        Type = "oneshot";
-      };
+        serviceConfig = {
+          Type = "oneshot";
+          User = username;
 
-      script = concatStringsSep "\n" (mapAttrsToList activateUser cfg.users);
-    };
+          # The activation script is run by a login shell to make sure
+          # that the user is given a sane Nix environment.
+          ExecStart = pkgs.writeScript "activate-${username}" ''
+            #! ${pkgs.stdenv.shell} -el
+            echo Activating home-manager configuration for ${username}
+            exec ${usercfg.home.activationPackage}/activate
+          '';
+        };
+      }
+    ) cfg.users;
   };
 }
