@@ -6,12 +6,12 @@ let
 
   cfg = config.home-manager;
 
-  hmModule = types.submodule (
-    import ../modules/modules.nix {
+  hmModule = types.submodule {
+    imports = import ../modules/modules.nix {
       inherit lib pkgs;
       nixosSubmodule = true;
-    }
-  );
+    };
+  };
 
 in
 
