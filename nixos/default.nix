@@ -38,8 +38,9 @@ in
         wantedBy = [ "multi-user.target" ];
 
         serviceConfig = {
-          Type = "oneshot";
           User = username;
+          Type = "oneshot";
+          RemainAfterExit = "yes";
 
           # The activation script is run by a login shell to make sure
           # that the user is given a sane Nix environment.

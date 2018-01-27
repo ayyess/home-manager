@@ -145,17 +145,29 @@ in
           (buildServices "timer" cfg.timers)
         );
 
-      home.activation = mkIf (!config.nixosSubmodule) {
-        reloadSystemD = dag.entryAfter ["linkGeneration"] (
-          if cfg.startServices then
-            ''
-              PATH=${dirOf cfg.systemctlPath} \
-                ${pkgs.ruby}/bin/ruby ${./systemd-activate.rb} \
-                  "''${oldGenPath=}" "$newGenPath" "${servicesStartTimeoutMs}"
-            ''
-          else import ./systemd-activate.nix cfg.systemctlPath
-        );
-      };
+      # Run systemd service reload if user is logged in. If we're
+      # running this from the NixOS module then XDG_RUNTIME_DIR is not
+      # set and systemd commands will fail. We'll therefore have to
+      # set it ourselves in that case.
+      home.activation.reloadSystemD = dag.entryAfter ["linkGeneration"] (
+        let
+          autoReloadCmd = ''
+            PATH=${dirOf cfg.systemctlPath} \
+              ${pkgs.ruby}/bin/ruby ${./systemd-activate.rb} \
+                "''${oldGenPath=}" "$newGenPath" "${servicesStartTimeoutMs}"
+          '';
+
+          legacyReloadCmd = import ./systemd-activate.nix cfg.systemctlPath;
+        in
+          ''
+            if who | grep -q '^${config.home.username} '; then
+              XDG_RUNTIME_DIR=''${XDG_RUNTIME_DIR:-/run/user/$(id -u)} \
+                ${if cfg.startServices then autoReloadCmd else legacyReloadCmd}
+            else
+              echo "User ${config.home.username} not logged in. Skipping."
+            fi
+          ''
+      );
     })
   ];
 }
