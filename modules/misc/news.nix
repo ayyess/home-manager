@@ -767,6 +767,13 @@ in
       }
 
       {
+        time = "2018-08-21T17:25:13+00:00";
+        message = ''
+          A new module is available: 'programs.alot'.
+        '';
+      }
+
+      {
         time = "2018-08-21T20:13:50+00:00";
         message = ''
           A new module is available: 'services.pasystray'.
@@ -777,7 +784,7 @@ in
         time = "2018-08-29T20:27:04+00:00";
         message = ''
           A new module is available: 'programs.offlineimap'.
-        '';
+          '';
       }
     ];
   };
