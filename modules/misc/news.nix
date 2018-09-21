@@ -786,6 +786,34 @@ in
           A new module is available: 'programs.offlineimap'.
           '';
       }
+
+      {
+        time = "2018-09-18T21:25:14+00:00";
+        message = ''
+          A new module is available: 'programs.taskwarrior'.
+        '';
+      }
+
+      {
+        time = "2018-09-18T21:43:54+00:00";
+        message = ''
+          A new module is available: 'programs.zathura'.
+        '';
+      }
+
+      {
+        time = "2018-09-20T19:26:40+00:00";
+        message = ''
+          A new module is available: 'programs.noti'.
+        '';
+      }
+
+      {
+        time = "2018-09-20T22:10:45+00:00";
+        message = ''
+          A new module is available: 'programs.go'.
+        '';
+      }
     ];
   };
 }

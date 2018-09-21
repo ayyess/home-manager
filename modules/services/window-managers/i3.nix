@@ -6,7 +6,17 @@ let
 
   cfg = config.xsession.windowManager.i3;
 
-  dag = config.lib.dag;
+  commonOptions = {
+    fonts = mkOption {
+      type = types.listOf types.string;
+      default = ["monospace 8"];
+      description = ''
+        Font list used for window titles. Only FreeType fonts are supported.
+        The order here is improtant (e.g. icons font should go before the one used for text).
+      '';
+      example = [ "FontAwesome 10" "Terminus 10" ];
+    };
+  };
 
   startupModule = types.submodule {
     options = {
@@ -92,6 +102,8 @@ let
 
   barModule = types.submodule {
     options = {
+      inherit (commonOptions) fonts;
+
       id = mkOption {
         type = types.nullOr types.string;
         default = null;
@@ -241,15 +253,7 @@ let
 
   configModule = types.submodule {
     options = {
-      fonts = mkOption {
-        type = types.listOf types.string;
-        default = ["monospace 8"];
-        description = ''
-          Font list used for window titles. Only FreeType fonts are supported.
-          The order here is improtant (e.g. icons font should go before the one used for text).
-        '';
-        example = [ "FontAwesome 10" "Terminus 10" ];
-      };
+      inherit (commonOptions) fonts;
 
       window = mkOption {
         type = types.submodule {
@@ -402,6 +406,11 @@ let
           "${cfg.config.modifier}+Up" = "focus up";
           "${cfg.config.modifier}+Right" = "focus right";
 
+          "${cfg.config.modifier}+Shift+Left" = "move left";
+          "${cfg.config.modifier}+Shift+Down" = "move down";
+          "${cfg.config.modifier}+Shift+Up" = "move up";
+          "${cfg.config.modifier}+Shift+Right" = "move right";
+
           "${cfg.config.modifier}+h" = "split h";
           "${cfg.config.modifier}+v" = "split v";
           "${cfg.config.modifier}+f" = "fullscreen toggle";
@@ -411,6 +420,7 @@ let
           "${cfg.config.modifier}+e" = "layout toggle split";
 
           "${cfg.config.modifier}+Shift+space" = "floating toggle";
+          "${cfg.config.modifier}+space" = "focus mode_toggle";
 
           "${cfg.config.modifier}+1" = "workspace 1";
           "${cfg.config.modifier}+2" = "workspace 2";
@@ -660,11 +670,12 @@ let
   );
 
   barStr = {
-    id, mode, hiddenState, position, workspaceButtons,
+    id, fonts, mode, hiddenState, position, workspaceButtons,
     workspaceNumbers, command, statusCommand, colors, ...
   }: ''
     bar {
       ${optionalString (id != null) "id ${id}"}
+      font pango:${concatStringsSep ", " fonts}
       mode ${mode}
       hidden_state ${hiddenState}
       position ${position}

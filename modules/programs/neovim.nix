@@ -6,12 +6,46 @@ let
 
   cfg = config.programs.neovim;
 
+  extraPythonPackageType = mkOptionType {
+    name = "extra-python-packages";
+    description = "python packages in python.withPackages format";
+    check = with types; (x: if isFunction x
+      then isList (x pkgs.pythonPackages)
+      else false);
+    merge = mergeOneOption;
+  };
+
+  extraPython3PackageType = mkOptionType {
+    name = "extra-python3-packages";
+    description = "python3 packages in python.withPackages format";
+    check = with types; (x: if isFunction x
+      then isList (x pkgs.python3Packages)
+      else false);
+    merge = mergeOneOption;
+  };
+
 in
 
 {
   options = {
     programs.neovim = {
       enable = mkEnableOption "Neovim";
+
+      viAlias = mkOption {
+        type = types.bool;
+        default = false;
+        description = ''
+          Symlink `vi` to `nvim` binary.
+        '';
+      };
+
+      vimAlias = mkOption {
+        type = types.bool;
+        default = false;
+        description = ''
+          Symlink `vim` to `nvim` binary.
+        '';
+      };
 
       withPython = mkOption {
         type = types.bool;
@@ -23,12 +57,13 @@ in
       };
 
       extraPythonPackages = mkOption {
-        type = types.listOf types.package;
-        default = [ ];
-        example = literalExample "with pkgs.python2Packages; [ pandas jedi ]";
+        type = with types; either extraPythonPackageType (listOf package);
+        default = (_: []);
+        defaultText = "ps: []";
+        example = literalExample "(ps: with ps; [ pandas jedi ])";
         description = ''
-          List here Python 2 packages required for your plugins to
-          work.
+          A function in python.withPackages format, which returns a 
+          list of Python 2 packages required for your plugins to work.
         '';
       };
 
@@ -50,18 +85,19 @@ in
       };
 
       extraPython3Packages = mkOption {
-        type = types.listOf types.package;
-        default = [ ];
-        example = literalExample
-          "with pkgs.python3Packages; [ python-language-server ]";
+        type = with types; either extraPython3PackageType (listOf package);
+        default = (_: []);
+        defaultText = "ps: []";
+        example = literalExample "(ps: with ps; [ python-language-server ])";
         description = ''
-          List here Python 3 packages required for your plugins to work.
+          A function in python.withPackages format, which returns a 
+          list of Python 3 packages required for your plugins to work.
         '';
       };
 
       configure = mkOption {
-        type = types.nullOr types.attrs;
-        default = null;
+        type = types.attrs;
+        default = {};
         example = literalExample ''
           configure = {
               customRC = $''''
@@ -76,7 +112,7 @@ in
             };
         '';
         description = ''
-          Generate your init file from your list of plugins and custom commands, 
+          Generate your init file from your list of plugins and custom commands,
           and loads it from the store via <command>nvim -u /nix/store/hash-vimrc</command>
         '';
       };
@@ -89,7 +125,7 @@ in
         inherit (cfg)
           extraPython3Packages withPython3
           extraPythonPackages withPython
-          withRuby configure;
+          withRuby viAlias vimAlias configure;
       })
     ];
   };

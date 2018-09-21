@@ -39,6 +39,7 @@ let
     ./programs/fzf.nix
     ./programs/git.nix
     ./programs/gnome-terminal.nix
+    ./programs/go.nix
     ./programs/home-manager.nix
     ./programs/htop.nix
     ./programs/info.nix
@@ -49,14 +50,17 @@ let
     ./programs/msmtp.nix
     ./programs/neovim.nix
     ./programs/newsboat.nix
+    ./programs/noti.nix
     ./programs/notmuch.nix
     ./programs/offlineimap.nix
     ./programs/pidgin.nix
     ./programs/rofi.nix
     ./programs/ssh.nix
+    ./programs/taskwarrior.nix
     ./programs/termite.nix
     ./programs/texlive.nix
     ./programs/vim.nix
+    ./programs/zathura.nix
     ./programs/zsh.nix
     ./services/blueman-applet.nix
     ./services/compton.nix
