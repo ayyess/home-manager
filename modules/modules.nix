@@ -19,6 +19,7 @@ let
     ./manual.nix
     ./misc/fontconfig.nix
     ./misc/gtk.nix
+    ./misc/lib.nix
     ./misc/news.nix
     ./misc/nixpkgs.nix
     ./misc/pam.nix
@@ -52,6 +53,7 @@ let
     ./programs/newsboat.nix
     ./programs/noti.nix
     ./programs/notmuch.nix
+    ./programs/obs-studio.nix
     ./programs/offlineimap.nix
     ./programs/pidgin.nix
     ./programs/rofi.nix
@@ -59,6 +61,7 @@ let
     ./programs/taskwarrior.nix
     ./programs/termite.nix
     ./programs/texlive.nix
+    ./programs/urxvt.nix
     ./programs/vim.nix
     ./programs/zathura.nix
     ./programs/zsh.nix
@@ -98,7 +101,6 @@ let
     ./xresources.nix
     ./xsession.nix
     <nixpkgs/nixos/modules/misc/assertions.nix>
-    <nixpkgs/nixos/modules/misc/lib.nix>
     <nixpkgs/nixos/modules/misc/meta.nix>
   ]
   ++

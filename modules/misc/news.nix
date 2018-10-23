@@ -242,8 +242,7 @@ in
 
       {
         time = "2017-09-30T09:44:18+00:00";
-        condition = with config.programs.vim;
-          enable && (tabSize != null || lineNumbers != null);
+        condition = with config.programs.vim; enable;
         message = ''
           The options 'programs.vim.tabSize' and 'programs.vim.lineNumbers' have
           been deprecated and will be removed in the near future.
@@ -812,6 +811,27 @@ in
         time = "2018-09-20T22:10:45+00:00";
         message = ''
           A new module is available: 'programs.go'.
+        '';
+      }
+
+      {
+        time = "2018-09-27T17:48:08+00:00";
+        message = ''
+          A new module is available: 'programs.obs-studio'.
+        '';
+      }
+
+      {
+        time = "2018-09-28T21:38:48+00:00";
+        message = ''
+          A new module is available: 'programs.alot'.
+        '';
+      }
+
+      {
+        time = "2018-10-20T09:30:57+00:00";
+        message = ''
+          A new module is available: 'programs.urxvt'.
         '';
       }
     ];
