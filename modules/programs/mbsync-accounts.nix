@@ -2,6 +2,67 @@
 
 with lib;
 
+let
+  channelModule = types.submodule {
+    options = {
+
+      remotePath = mkOption {
+        type = types.str;
+        default = "";
+        example = "INBOX";
+        description = ''
+          Relative path to remote mailbox (can be empty).
+        '';
+      };
+
+      localPath = mkOption {
+        type = types.str;
+        default = "";
+        example = "inbox";
+        description = ''
+          Relative path to local mailbox (can be empty).
+        '';
+      };
+
+      create = mkOption {
+        type = types.enum [ "none" "maildir" "imap" "both" ];
+        default = "none";
+        example = "maildir";
+        description = ''
+                Automatically create missing mailboxes within the
+                given mail store.
+        '';
+      };
+
+      remove = mkOption {
+        type = types.enum [ "none" "maildir" "imap" "both" ];
+        default = "none";
+        example = "imap";
+        description = ''
+                Propagate mailbox deletions to the given mail store.
+        '';
+      };
+
+      expunge = mkOption {
+        type = types.enum [ "none" "maildir" "imap" "both" ];
+        default = "none";
+        example = "both";
+        description = ''
+                Permanently remove messages marked for deletion from
+                the given mail store.
+        '';
+      };
+
+      patterns = mkOption {
+        type = types.listOf types.str;
+        default = [ ];
+        description = ''
+                Pattern of mailboxes to synchronize.
+        '';
+      };
+    };
+  };
+in
 {
   options.mbsync = {
     enable = mkEnableOption "synchronization using mbsync";
@@ -17,40 +78,10 @@ with lib;
       '';
     };
 
-    create = mkOption {
-      type = types.enum [ "none" "maildir" "imap" "both" ];
-      default = "none";
-      example = "maildir";
+    channels = mkOption {
+      type = types.listOf channelModule;
       description = ''
-        Automatically create missing mailboxes within the
-        given mail store.
-      '';
-    };
-
-    remove = mkOption {
-      type = types.enum [ "none" "maildir" "imap" "both" ];
-      default = "none";
-      example = "imap";
-      description = ''
-        Propagate mailbox deletions to the given mail store.
-      '';
-    };
-
-    expunge = mkOption {
-      type = types.enum [ "none" "maildir" "imap" "both" ];
-      default = "none";
-      example = "both";
-      description = ''
-        Permanently remove messages marked for deletion from
-        the given mail store.
-      '';
-    };
-
-    patterns = mkOption {
-      type = types.listOf types.str;
-      default = [ "*" ];
-      description = ''
-        Pattern of mailboxes to synchronize.
+        Channels to sync
       '';
     };
   };

@@ -74,15 +74,22 @@ let
         optionalAttrs (mbsync.flatten != null) { Flatten = mbsync.flatten; }
       )
       + "\n"
-      + genSection "Channel ${name}" {
-        Master = ":${name}-remote:";
-        Slave = ":${name}-local:";
-        Patterns = mbsync.patterns;
-        Create = masterSlaveMapping.${mbsync.create};
-        Remove = masterSlaveMapping.${mbsync.remove};
-        Expunge = masterSlaveMapping.${mbsync.expunge};
-        SyncState = "*";
+      + concatMapStringsSep "\n" (channel:
+
+      genSection "Channel ${name}-${channel.localPath}" ({
+        Master = ":${name}-remote:${channel.remotePath}";
+        Slave = ":${name}-local:${channel.localPath}";
       }
+      // (if (channel.patterns != []) then {
+        Patterns =  channel.patterns;
+      } else {})
+      // {
+        Create = masterSlaveMapping.${channel.create};
+        Remove = masterSlaveMapping.${channel.remove};
+        Expunge = masterSlaveMapping.${channel.expunge};
+        SyncState = "*";
+      })
+      ) mbsync.channels
       + "\n";
 
   genGroupConfig = name: channels:
