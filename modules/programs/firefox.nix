@@ -27,6 +27,12 @@ in
         default = false;
         description = "Whether to enable the unfree Adobe Flash plugin.";
       };
+      
+      enableAdobeFlashDRM = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Whether to enable the unfree Adobe Flash plugin.";
+      };
 
       enableGoogleTalk = mkOption {
         type = types.bool;
@@ -35,6 +41,12 @@ in
       };
 
       enableIcedTea = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Whether to enable the Java applet plugin.";
+      };
+      
+      enablePlasmaBrowserIntegration = mkOption {
         type = types.bool;
         default = false;
         description = "Whether to enable the Java applet plugin.";
@@ -51,8 +63,10 @@ in
 
         fcfg = setAttrByPath [browserName] {
           enableAdobeFlash = cfg.enableAdobeFlash;
+          enableAdobeFlashDRM = cfg.enableAdobeFlashDRM;
           enableGoogleTalkPlugin = cfg.enableGoogleTalk;
           icedtea = cfg.enableIcedTea;
+          enablePlasmaBrowserIntegration = cfg.enablePlasmaBrowserIntegration;
         };
 
         wrapper = pkgs.wrapFirefox.override {

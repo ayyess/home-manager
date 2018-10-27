@@ -80,18 +80,28 @@ let
         // mbsync.extraConfig.local
       )
       + "\n"
-      + genSection "Channel ${name}" (
-        {
-          Master = ":${name}-remote:";
-          Slave = ":${name}-local:";
-          Patterns = mbsync.patterns;
-          Create = masterSlaveMapping.${mbsync.create};
-          Remove = masterSlaveMapping.${mbsync.remove};
-          Expunge = masterSlaveMapping.${mbsync.expunge};
+      + concatMapStringsSep "\n" (channel:
+
+      genSection "Channel ${name}-${channel.localPath}" ({
+          Master = ":${name}-remote:${channel.remotePath}";
+          Slave = ":${name}-local:${channel.localPath}";
+          Create = masterSlaveMapping.${channel.create};
+          Remove = masterSlaveMapping.${channel.remove};
+          Expunge = masterSlaveMapping.${channel.expunge};
           SyncState = "*";
-        }
+        } // (if (channel.patterns != []) then {
+          Patterns =  channel.patterns;
+        } else {})
         // mbsync.extraConfig.channel
       )
+      ) mbsync.channels
+      + "\n"
+      + concatStringsSep "\n" (
+        [ "Group ${name}" ] ++ map (channel: 
+        "Channel ${name}-${channel.localPath}")
+        mbsync.channels)
+        # // mbsync.extraConfig.channel
+      # )
       + "\n";
 
   genGroupConfig = name: channels:
