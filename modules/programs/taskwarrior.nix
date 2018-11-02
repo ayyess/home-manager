@@ -10,7 +10,9 @@ let
 
   includeTheme = location:
     if location == null then ""
-    else if isString location then "include ${themePath location}"
+    else if (isString location &&
+    builtins.substring 0 1 (toString location) != "/") then
+    "include ${themePath location}"
     else "include ${location}";
 
   formatValue = value:
