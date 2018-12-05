@@ -11,7 +11,7 @@ let
       tweakVal = v:
         if isString v then v
         else if isList v then concatMapStringsSep ";" tweakVal v
-        else if isBool v then toJSON v
+        else if isBool v then (if v then "true" else "false")
         else toString v;
     in
       "${key}=${tweakVal value}";
@@ -21,6 +21,10 @@ let
       {
         database = {
           path = config.accounts.email.maildirBasePath;
+        };
+
+        maildir = {
+          synchronize_flags = cfg.maildir.synchronizeFlags;
         };
 
         new = {
@@ -86,9 +90,7 @@ in
 
       extraConfig = mkOption {
         type = types.attrsOf (types.attrsOf types.str);
-        default = {
-          maildir = { synchronize_flags = "true"; };
-        };
+        default = {};
         description = ''
           Options that should be appended to the notmuch configuration file.
         '';
@@ -123,6 +125,16 @@ in
           description = ''
             Bash statements run after a message has been inserted
             into the database and initial tags have been applied.
+          '';
+        };
+      };
+
+      maildir = {
+        synchronizeFlags = mkOption {
+          type = types.bool;
+          default = true;
+          description = ''
+            Whether to synchronize Maildir flags.
           '';
         };
       };

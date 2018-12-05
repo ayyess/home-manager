@@ -848,6 +848,60 @@ in
           untested at this time.
         '';
       }
+
+      {
+        time = "2018-11-24T16:22:19+00:00";
+        message = ''
+          A new option 'home.stateVersion' is available. Its function
+          is much like the 'system.stateVersion' option in NixOS.
+
+          Briefly, the state version indicates a stable set of option
+          defaults. In the future, whenever Home Manager changes an
+          option default in a way that may cause program breakage it
+          will do so only for the unstable state version, currently
+          19.03. Once 19.03 becomes the stable version only backwards
+          compatible changes will be made and 19.09 becomes the
+          unstable state version.
+
+          The default value for this option is 18.09 but it may still
+          be a good idea to explicitly add
+
+              home.stateVersion = "18.09";
+
+          to your Home Manager configuration.
+        '';
+      }
+
+      {
+        time = "2018-11-25T22:10:15+00:00";
+        message = ''
+          A new module is available: 'services.nextcloud-client'.
+        '';
+      }
+
+      {
+        time = "2018-11-25T22:55:12+00:00";
+        message = ''
+          A new module is available: 'programs.vscode'.
+        '';
+      }
+
+      {
+        time = "2018-12-04T21:54:38+00:00";
+        condition = config.programs.beets.settings != {};
+        message = ''
+          A new option 'programs.beets.enable' has been added.
+          Starting with state version 19.03 this option defaults to
+          false. For earlier versions it defaults to true if
+          'programs.beets.settings' is non-empty.
+
+          It is recommended to explicitly add
+
+              programs.beets.enable = true;
+
+          to your configuration.
+        '';
+      }
     ];
   };
 }

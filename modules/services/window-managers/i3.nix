@@ -230,6 +230,12 @@ let
           See <link xlink:href="https://i3wm.org/docs/userguide.html#_colors"/>.
         '';
       };
+
+      trayOutput = mkOption {
+        type = types.string;
+        default = "primary";
+        description = "Where to output tray.";
+      };
     };
   };
 
@@ -249,7 +255,7 @@ let
     };
   };
 
-  criteriaModule = types.attrs;
+  criteriaModule = types.attrsOf types.str;
 
   configModule = types.submodule {
     options = {
@@ -394,8 +400,18 @@ let
         example = "Mod4";
       };
 
+      workspaceLayout = mkOption {
+        type = types.enum [ "default" "stacked" "tabbed" ];
+        default = "default";
+        example = "tabbed";
+        description = ''
+          The mode in which new containers on workspace level will
+          start.
+        '';
+      };
+
       keybindings = mkOption {
-        type = types.attrs;
+        type = types.attrsOf types.str;
         default = {
           "${cfg.config.modifier}+Return" = "exec i3-sensible-terminal";
           "${cfg.config.modifier}+Shift+q" = "kill";
@@ -470,7 +486,7 @@ let
       };
 
       keycodebindings = mkOption {
-        type = types.attrs;
+        type = types.attrsOf types.str;
         default = {};
         description = ''
           An attribute set that assigns keypress to an action using key code.
@@ -555,7 +571,7 @@ let
       };
 
       modes = mkOption {
-        type = types.attrsOf types.attrs;
+        type = types.attrsOf (types.attrsOf types.str);
         default = {
           resize = {
             "Left" = "resize shrink width 10 px or 10 ppt";
@@ -671,7 +687,7 @@ let
 
   barStr = {
     id, fonts, mode, hiddenState, position, workspaceButtons,
-    workspaceNumbers, command, statusCommand, colors, ...
+    workspaceNumbers, command, statusCommand, colors, trayOutput, ...
   }: ''
     bar {
       ${optionalString (id != null) "id ${id}"}
@@ -683,6 +699,7 @@ let
       i3bar_command ${command}
       workspace_buttons ${if workspaceButtons then "yes" else "no"}
       strip_workspace_numbers ${if !workspaceNumbers then "yes" else "no"}
+      tray_output ${trayOutput}
       colors {
         background ${colors.background}
         statusline ${colors.statusline}
@@ -727,6 +744,7 @@ let
     focus_follows_mouse ${if focus.followMouse then "yes" else "no"}
     focus_on_window_activation ${focus.newWindow}
     mouse_warping ${if focus.mouseWarping then "output" else "none"}
+    workspace_layout ${workspaceLayout}
 
     client.focused ${colorSetStr colors.focused}
     client.focused_inactive ${colorSetStr colors.focusedInactive}

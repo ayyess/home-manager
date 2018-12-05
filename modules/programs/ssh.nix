@@ -8,6 +8,8 @@ let
 
   yn = flag: if flag then "yes" else "no";
 
+  unwords = builtins.concatStringsSep " ";
+
   matchBlockModule = types.submodule ({ name, ... }: {
     options = {
       host = mkOption {
@@ -22,6 +24,15 @@ let
         type = types.nullOr types.int;
         default = null;
         description = "Specifies port number to connect on remote host.";
+      };
+
+      forwardAgent = mkOption {
+        default = null;
+        type = types.nullOr types.bool;
+        description = ''
+          Whether the connection to the authentication agent (if any)
+          will be forwarded to the remote machine.
+        '';
       };
 
       forwardX11 = mkOption {
@@ -81,6 +92,15 @@ let
           "Set timeout in seconds after which response will be requested.";
       };
 
+      sendEnv = mkOption {
+        type = types.listOf types.str;
+        default = [];
+        description = ''
+          Environment variables to send from the local host to the
+          server.
+        '';
+      };
+
       compression = mkOption {
         type = types.nullOr types.bool;
         default = null;
@@ -105,6 +125,22 @@ let
         description = "The command to use to connect to the server.";
       };
 
+      certificateFile = mkOption {
+        type = types.nullOr types.path;
+        default = null;
+        description = ''
+          Specifies a file from which the user certificate is read.
+        '';
+      };
+
+      addressFamily = mkOption {
+        default = null;
+        type = types.nullOr (types.enum ["any" "inet" "inet6"]);
+        description = ''
+          Specifies which address family to use when connecting.
+        '';
+      };
+
       extraOptions = mkOption {
         type = types.attrsOf types.str;
         default = {};
@@ -117,18 +153,22 @@ let
 
   matchBlockStr = cf: concatStringsSep "\n" (
     ["Host ${cf.host}"]
-    ++ optional (cf.port != null)         "  Port ${toString cf.port}"
-    ++ optional cf.forwardX11             "  ForwardX11 yes"
-    ++ optional cf.forwardX11Trusted      "  ForwardX11Trusted yes"
-    ++ optional cf.identitiesOnly         "  IdentitiesOnly yes"
-    ++ optional (cf.user != null)         "  User ${cf.user}"
-    ++ optional (cf.identityFile != null) "  IdentityFile ${cf.identityFile}"
-    ++ optional (cf.hostname != null)     "  HostName ${cf.hostname}"
+    ++ optional (cf.port != null)            "  Port ${toString cf.port}"
+    ++ optional (cf.forwardAgent != null)    "  ForwardAgent ${yn cf.forwardAgent}"
+    ++ optional cf.forwardX11                "  ForwardX11 yes"
+    ++ optional cf.forwardX11Trusted         "  ForwardX11Trusted yes"
+    ++ optional cf.identitiesOnly            "  IdentitiesOnly yes"
+    ++ optional (cf.user != null)            "  User ${cf.user}"
+    ++ optional (cf.identityFile != null)    "  IdentityFile ${cf.identityFile}"
+    ++ optional (cf.certificateFile != null) "  CertificateFile ${cf.certificateFile}"
+    ++ optional (cf.hostname != null)        "  HostName ${cf.hostname}"
+    ++ optional (cf.addressFamily != null)   "  AddressFamily ${cf.addressFamily}"
+    ++ optional (cf.sendEnv != [])           "  SendEnv ${unwords cf.sendEnv}"
     ++ optional (cf.serverAliveInterval != 0)
          "  ServerAliveInterval ${toString cf.serverAliveInterval}"
-    ++ optional (cf.compression != null)  "  Compression ${yn cf.compression}"
-    ++ optional (!cf.checkHostIP)         "  CheckHostIP no"
-    ++ optional (cf.proxyCommand != null) "  ProxyCommand ${cf.proxyCommand}"
+    ++ optional (cf.compression != null)     "  Compression ${yn cf.compression}"
+    ++ optional (!cf.checkHostIP)            "  CheckHostIP no"
+    ++ optional (cf.proxyCommand != null)    "  ProxyCommand ${cf.proxyCommand}"
     ++ mapAttrsToList (n: v: "  ${n} ${v}") cf.extraOptions
   );
 
@@ -144,8 +184,8 @@ in
       default = false;
       type = types.bool;
       description = ''
-        Whether connection to authentication agent (if any) will be forwarded
-        to remote machine.
+        Whether the connection to the authentication agent (if any)
+        will be forwarded to the remote machine.
       '';
     };
 
@@ -197,7 +237,7 @@ in
 
     controlPath = mkOption {
       type = types.str;
-      default = "~/.ssh/master-%r@%h:%p";
+      default = "~/.ssh/master-%r@%n:%p";
       description = ''
         Specify path to the control socket used for connection sharing.
       '';

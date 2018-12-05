@@ -24,6 +24,7 @@ let
     ./misc/nixpkgs.nix
     ./misc/pam.nix
     ./misc/qt.nix
+    ./misc/version.nix
     ./misc/xdg.nix
     ./programs/afew.nix
     ./programs/alot.nix
@@ -66,6 +67,7 @@ let
     ./programs/tmux.nix
     ./programs/urxvt.nix
     ./programs/vim.nix
+    ./programs/vscode.nix
     ./programs/zathura.nix
     ./programs/zsh.nix
     ./services/blueman-applet.nix
@@ -81,6 +83,7 @@ let
     ./services/mbsync.nix
     ./services/mpd.nix
     ./services/network-manager-applet.nix
+    ./services/nextcloud-client.nix
     ./services/owncloud-client.nix
     ./services/parcellite.nix
     ./services/pasystray.nix
