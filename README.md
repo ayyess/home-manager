@@ -87,8 +87,9 @@ Currently the easiest way to install Home Manager is as follows:
     $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
     ```
 
-    file in your shell configuration. Unfortunately, we currently only
-    support POSIX.2-like shells such as [Bash][] or [Z shell][].
+    file in your shell configuration. Unfortunately, in this specific
+    case we currently only support POSIX.2-like shells such as
+    [Bash][] or [Z shell][].
 
     For example, if you use Bash then add
 
@@ -222,7 +223,7 @@ such collision is detected the activation will terminate before
 changing anything on your computer.
 
 For example, suppose you have a wonderful, painstakingly created
-`~/.gitconfig` and add
+`~/.config/git/config` and add
 
 ```nix
 {
