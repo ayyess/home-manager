@@ -6,6 +6,8 @@ let
 
   cfg = config.news;
 
+  hostPlatform = pkgs.stdenv.hostPlatform;
+
   entryModule = types.submodule ({ config, ... }: {
     options = {
       id = mkOption {
@@ -734,7 +736,7 @@ in
 
       {
         time = "2018-08-19T20:46:09+00:00";
-        condition = pkgs.stdenv.isLinux;
+        condition = hostPlatform.isLinux;
         message = ''
           A new modules is available: 'programs.chromium'.
         '';
@@ -907,6 +909,31 @@ in
         time = "2018-12-12T21:02:05+00:00";
         message = ''
           A new module is available: 'programs.jq'.
+        '';
+      }
+
+      {
+        time = "2018-12-24T16:26:16+00:00";
+        message = ''
+          A new module is available: 'dconf'.
+
+          Note, on NixOS you may need to add
+
+              services.dbus.packages = with pkgs; [ gnome3.dconf ];
+
+          to the system configuration for this module to work as
+          expected. In particular if you get the error message
+
+              The name ca.desrt.dconf was not provided by any .service files
+
+          when activating your Home Manager configuration.
+        '';
+      }
+
+      {
+        time = "2018-12-28T12:32:30+00:00";
+        message = ''
+          A new module is available: 'programs.opam'.
         '';
       }
     ];

@@ -6,8 +6,13 @@ let
 
   cfg = config.programs.emacs;
 
-  # Copied from all-packages.nix.
-  emacsPackages = pkgs.emacsPackagesNgGen cfg.package;
+  # Copied from all-packages.nix, with modifications to support
+  # overrides.
+  emacsPackages =
+    let
+      epkgs = pkgs.emacsPackagesNgGen cfg.package;
+    in
+      epkgs.overrideScope' cfg.overrides;
   emacsWithPackages = emacsPackages.emacsWithPackages;
 
 in
@@ -34,11 +39,27 @@ in
         description = "Extra packages available to Emacs.";
       };
 
+      overrides = mkOption {
+        default = self: super: {};
+        defaultText = "self: super: {}";
+        example = literalExample ''
+          self: super: rec {
+            haskell-mode = self.melpaPackages.haskell-mode;
+            # ...
+          };
+        '';
+        description = ''
+          Allows overriding packages within the Emacs package set.
+        '';
+      };
+
       finalPackage = mkOption {
         type = types.package;
-        internal = true;
+        visible = false;
         readOnly = true;
-        description = "The Emacs package including any extra packages.";
+        description = ''
+          The Emacs package including any overrides and extra packages.
+        '';
       };
     };
   };

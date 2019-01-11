@@ -11,13 +11,20 @@ let
   pluginsDir = if cfg.dotDir != null then
     relToDotDir "plugins" else ".zsh/plugins";
 
-  envVarsStr = config.lib.shell.exportAll cfg.sessionVariables;
+  envVarsStr = config.lib.zsh.exportAll cfg.sessionVariables;
+  localVarsStr = config.lib.zsh.defineAll cfg.localVariables;
 
   aliasesStr = concatStringsSep "\n" (
     mapAttrsToList (k: v: "alias ${k}='${v}'") cfg.shellAliases
   );
 
   zdotdir = "$HOME/" + cfg.dotDir;
+
+  bindkeyCommands = {
+    emacs = "bindkey -e";
+    viins = "bindkey -v";
+    vicmd = "bindkey -a";
+  };
 
   historyModule = types.submodule ({ config, ... }: {
     options = {
@@ -186,6 +193,13 @@ in
         description = "Options related to commands history configuration.";
       };
 
+      defaultKeymap = mkOption {
+        type = types.nullOr (types.enum (attrNames bindkeyCommands));
+        default = null;
+        example = "emacs";
+        description = "The default base keymap to use.";
+      };
+
       sessionVariables = mkOption {
         default = {};
         type = types.attrs;
@@ -252,6 +266,15 @@ in
         default = {};
         description = "Options to configure oh-my-zsh.";
       };
+
+      localVariables = mkOption {
+        type = types.attrs;
+        default = {};
+        example = { POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=["dir" "vcs"]; };
+        description = ''
+          Extra local variables defined at the top of <filename>.zshrc</filename>.
+        '';
+      };
     };
   };
 
@@ -302,6 +325,13 @@ in
         done
 
         HELPDIR="${pkgs.zsh}/share/zsh/$ZSH_VERSION/help"
+
+        ${optionalString (cfg.defaultKeymap != null) ''
+          # Use ${cfg.defaultKeymap} keymap as the default.
+          ${getAttr cfg.defaultKeymap bindkeyCommands}
+        ''}
+
+        ${localVarsStr}
 
         ${concatStrings (map (plugin: ''
           path+="$HOME/${pluginsDir}/${plugin.name}"
