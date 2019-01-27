@@ -98,11 +98,11 @@ in
           ++ optional cfg.tmuxinator.enable pkgs.tmuxinator
           ++ optional cfg.tmuxp.enable      pkgs.tmuxp;
 
-          home.file.".tmux.conf".text = cfg.extraConfig;
+          home.file.".tmux.conf".text = mkOrder 3 cfg.extraConfig;
       }
 
       (mkIf cfg.sensibleOnTop {
-        home.file.".tmux.conf".text = mkBefore ''
+        home.file.".tmux.conf".text = mkOrder 1 ''
           # ============================================= #
           # Start with defaults from the Sensible plugin  #
           # --------------------------------------------- #
@@ -125,7 +125,7 @@ in
             }
         )];
 
-        home.file.".tmux.conf".text = mkAfter ''
+        home.file.".tmux.conf".text = mkOrder 2 ''
           # ============================================= #
           # Load plugins with Home Manager                #
           # --------------------------------------------- #
