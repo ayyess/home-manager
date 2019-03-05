@@ -7,12 +7,17 @@ let
   cfg = config.home-manager;
 
   hmModule = types.submodule ({name, ...}: {
-    imports = import ../modules/modules.nix {
-      inherit lib pkgs;
-      nixosSubmodule = true;
-    };
+    imports = import ../modules/modules.nix { inherit lib pkgs; };
 
     config = {
+      submoduleSupport.enable = true;
+      submoduleSupport.externalPackageInstall = cfg.useUserPackages;
+
+      # The per-user directory inside /etc/profiles is not known by
+      # fontconfig by default.
+      fonts.fontconfig.enableProfileFonts =
+        cfg.useUserPackages && config.fonts.fontconfig.enable;
+
       home.username = config.users.users.${name}.name;
       home.homeDirectory = config.users.users.${name}.home;
     };
@@ -22,16 +27,29 @@ in
 
 {
   options = {
-    home-manager.users = mkOption {
-      type = types.attrsOf hmModule;
-      default = {};
-      description = ''
-        Per-user Home Manager configuration.
+    home-manager = {
+      useUserPackages = mkEnableOption ''
+        installation of user packages through the
+        <option>users.users.&lt;name?&gt;.packages</option> option.
       '';
+
+      users = mkOption {
+        type = types.attrsOf hmModule;
+        default = {};
+        description = ''
+          Per-user Home Manager configuration.
+        '';
+      };
     };
   };
 
   config = mkIf (cfg.users != {}) {
+    users.users = mkIf cfg.useUserPackages (
+      mapAttrs (username: usercfg: {
+        packages = usercfg.home.packages;
+      }) cfg.users
+    );
+
     systemd.services = mapAttrs' (username: usercfg:
       nameValuePair ("home-manager-${utils.escapeSystemdPath username}") {
         description = "Home Manager environment for ${username}";
@@ -40,7 +58,7 @@ in
         after = [ "nix-daemon.socket" ];
 
         serviceConfig = {
-          User = username;
+          User = usercfg.home.username;
           Type = "oneshot";
           RemainAfterExit = "yes";
           SyslogIdentifier = "hm-activate-${username}";

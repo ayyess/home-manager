@@ -958,6 +958,53 @@ in
           A new module is available: 'programs.irssi'.
         '';
       }
+
+      {
+        time = "2019-02-09T14:09:58+00:00";
+        condition = hostPlatform.isLinux;
+        message = ''
+          A new module is available: 'services.emacs'.
+
+          This module provides a user service that runs the Emacs
+          configured in
+
+              programs.emacs
+
+          as an Emacs daemon.
+        '';
+      }
+
+      {
+        time = "2019-02-16T20:33:56+00:00";
+        condition = hostPlatform.isLinux;
+        message = ''
+          When using Home Manager as a NixOS submodule it is now
+          possible to install packages using the NixOS
+
+              users.users.<name?>.packages
+
+          option. This is enabled by adding
+
+              home-manager.useUserPackages = true;
+
+          to your NixOS system configuration. This mode of operation
+          is necessary if you want to use 'nixos-rebuild build-vm'.
+        '';
+      }
+
+      {
+        time = "2019-02-17T21:11:24+00:00";
+        message = ''
+          A new module is available: 'programs.keychain'.
+        '';
+      }
+
+      {
+        time = "2019-02-24T00:32:23+00:00";
+        message = ''
+          A new service is available: 'services.mpdris2'.
+        '';
+      }
     ];
   };
 }

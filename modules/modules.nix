@@ -3,9 +3,6 @@
 
   # Whether to enable module type checking.
 , check ? true
-
-  # Whether these modules are inside a NixOS submodule.
-, nixosSubmodule ? false
 }:
 
 with lib;
@@ -33,6 +30,7 @@ let
     (loadModule ./misc/nixpkgs.nix { })
     (loadModule ./misc/pam.nix { })
     (loadModule ./misc/qt.nix { })
+    (loadModule ./misc/submodule-support.nix { })
     (loadModule ./misc/version.nix { })
     (loadModule ./misc/xdg.nix { })
     (loadModule ./programs/afew.nix { })
@@ -59,6 +57,7 @@ let
     (loadModule ./programs/info.nix { })
     (loadModule ./programs/irssi.nix { })
     (loadModule ./programs/jq.nix { })
+    (loadModule ./programs/keychain.nix { })
     (loadModule ./programs/lesspipe.nix { })
     (loadModule ./programs/man.nix { })
     (loadModule ./programs/matplotlib.nix { })
@@ -87,6 +86,7 @@ let
     (loadModule ./services/blueman-applet.nix { })
     (loadModule ./services/compton.nix { })
     (loadModule ./services/dunst.nix { })
+    (loadModule ./services/emacs.nix { condition = hostPlatform.isLinux; })
     (loadModule ./services/flameshot.nix { })
     (loadModule ./services/gnome-keyring.nix { })
     (loadModule ./services/gpg-agent.nix { })
@@ -96,6 +96,7 @@ let
     (loadModule ./services/keybase.nix { })
     (loadModule ./services/mbsync.nix { })
     (loadModule ./services/mpd.nix { })
+    (loadModule ./services/mpdris2.nix { condition = hostPlatform.isLinux; })
     (loadModule ./services/network-manager-applet.nix { })
     (loadModule ./services/nextcloud-client.nix { })
     (loadModule ./services/owncloud-client.nix { })
@@ -128,17 +129,10 @@ let
   modules = map (getAttr "file") (filter (getAttr "condition") allModules);
 
   pkgsModule = {
-    options.nixosSubmodule = mkOption {
-      type = types.bool;
-      internal = true;
-      readOnly = true;
-    };
-
     config._module.args.baseModules = modules;
     config._module.args.pkgs = lib.mkDefault pkgs;
     config._module.check = check;
     config.lib = import ./lib { inherit lib; };
-    config.nixosSubmodule = nixosSubmodule;
     config.nixpkgs.system = mkDefault pkgs.system;
   };
 

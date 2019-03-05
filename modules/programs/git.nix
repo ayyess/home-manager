@@ -34,7 +34,7 @@ let
     };
   };
 
-  includeModule = types.submodule {
+  includeModule = types.submodule ({ config, ... }: {
     options = {
       condition = mkOption {
         type = types.nullOr types.str;
@@ -50,11 +50,23 @@ let
       };
 
       path = mkOption {
-        type = types.str;
+        type = with types; either str path;
         description = "Path of the configuration file to include.";
       };
+
+      contents = mkOption {
+        type = types.attrs;
+        default = {};
+        description = ''
+          Configuration to include. If empty then a path must be given.
+        '';
+      };
     };
-  };
+
+    config.path = mkIf (config.contents != {}) (
+      mkDefault (pkgs.writeText "contents" (generators.toINI {} config.contents))
+    );
+  });
 
 in
 
@@ -133,6 +145,20 @@ in
         '';
         description = "List of configuration files to include.";
       };
+
+      lfs = {
+        enable = mkEnableOption "Git Large File Storage";
+
+        skipSmudge = mkOption {
+          type = types.bool;
+          default = false;
+          description = ''
+            Skip automatic downloading of objects on clone or pull.
+            This requires a manual <command>git lfs pull</command>
+            every time a new commit is checked out on your repository.
+          '';
+        };
+      };
     };
   };
 
@@ -203,6 +229,25 @@ in
               path = ${path}
             '')
             cfg.includes);
+      })
+
+      (mkIf cfg.lfs.enable {
+        home.packages = [ pkgs.git-lfs ];
+
+        programs.git.iniContent."filter \"lfs\"" =
+          let
+            skipArg = optional cfg.lfs.skipSmudge "--skip";
+          in
+            {
+              clean = "git-lfs clean -- %f";
+              process = concatStringsSep " " (
+                [ "git-lfs" "filter-process" ] ++ skipArg
+              );
+              required = true;
+              smudge = concatStringsSep " " (
+                [ "git-lfs" "smudge" ] ++ skipArg ++ [ "--" "%f" ]
+              );
+            };
       })
     ]
   );
