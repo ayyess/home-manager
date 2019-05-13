@@ -42,11 +42,13 @@ let
           in {
             name = catAttrs "realName" primary;
             primary_email = catAttrs "address" primary;
-            other_email = catAttrs "address" secondaries;
+            other_email = catAttrs "aliases" primary
+              ++ catAttrs "address" secondaries
+              ++ catAttrs "aliases" secondaries;
           };
 
         search = {
-          exclude_tags = [ "deleted" "spam" ];
+          exclude_tags = cfg.search.excludeTags;
         };
       }
       cfg.extraConfig;
@@ -135,6 +137,19 @@ in
           default = true;
           description = ''
             Whether to synchronize Maildir flags.
+          '';
+        };
+      };
+
+      search = {
+        excludeTags = mkOption {
+          type = types.listOf types.str;
+          default = [ "deleted" "spam" ];
+          example = [ "trash" "spam" ];
+          description = ''
+            A  list  of  tags  that  will be excluded from search results by
+            default. Using an excluded tag in a  query  will  override  that
+            exclusion.
           '';
         };
       };

@@ -1001,6 +1001,7 @@ in
 
       {
         time = "2019-02-24T00:32:23+00:00";
+        condition = hostPlatform.isLinux;
         message = ''
           A new service is available: 'services.mpdris2'.
         '';
@@ -1017,6 +1018,84 @@ in
         time = "2019-03-19T23:07:34+00:00";
         message = ''
           A new module is available: 'programs.lsd'.
+        '';
+      }
+
+      {
+        time = "2019-04-09T20:10:22+00:00";
+        condition = hostPlatform.isLinux;
+        message = ''
+          A new module is available: 'services.xcape'.
+        '';
+      }
+
+      {
+        time = "2019-04-11T22:50:10+00:00";
+        condition = hostPlatform.isLinux;
+        message = ''
+          The type used for the systemd unit options under
+
+              systemd.user.services, systemd.user.sockets, etc.
+
+          has been changed to offer more robust merging of configurations.
+
+          If you don't override values within systemd units then you are not
+          affected by this change. Unfortunately, if you do override unit values
+          you may encounter errors due to this change.
+
+          In particular, if you get an error saying that a "unique option" is
+          "defined multiple times" then you need to use 'lib.mkForce'. For
+          example,
+
+              systemd.user.services.foo.Service.ExecStart = "/foo/bar";
+
+          becomes
+
+              systemd.user.services.foo.Service.ExecStart = lib.mkForce "/foo/bar";
+
+          We had to make this change because the old merging was causing too
+          many confusing situations for people. Apologies for potentially
+          breaking your configuration!
+        '';
+      }
+
+      {
+        time = "2019-04-14T15:35:16+00:00";
+        message = ''
+          A new module is available: 'programs.skim'.
+        '';
+      }
+
+      {
+        time = "2019-04-22T12:43:20+00:00";
+        message = ''
+          A new module is available: 'programs.alacritty'.
+        '';
+      }
+
+      {
+        time = "2019-04-26T22:53:48+00:00";
+        condition = config.programs.vscode.enable;
+        message = ''
+          A new module is available: 'programs.vscode.haskell'.
+
+          Enable to add Haskell IDE Engine and syntax highlighting
+          support to your VSCode.
+        '';
+      }
+
+      {
+        time = "2019-05-04T23:56:39+00:00";
+        condition = hostPlatform.isLinux;
+        message = ''
+          A new module is available: 'services.rsibreak'.
+        '';
+      }
+
+      {
+        time = "2019-05-07T20:49:29+00:00";
+        message = ''
+          A new module is available: 'programs.mpv'.
         '';
       }
     ];

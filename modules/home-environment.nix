@@ -139,9 +139,12 @@ in
     };
 
     home.keyboard = mkOption {
-      type = keyboardSubModule;
+      type = types.nullOr keyboardSubModule;
       default = {};
-      description = "Keyboard configuration.";
+      description = ''
+        Keyboard configuration. Set to <literal>null</literal> to
+        disable Home Manager keyboard management.
+      '';
     };
 
     home.sessionVariables = mkOption {
@@ -164,19 +167,19 @@ in
         variable may have a runtime dependency on another session
         variable. In particular code like
         <programlisting language="nix">
-          home.sessionVariables = {
-            FOO = "Hello";
-            BAR = "$FOO World!";
-          };
+        home.sessionVariables = {
+          FOO = "Hello";
+          BAR = "$FOO World!";
+        };
         </programlisting>
         may not work as expected. If you need to reference another
         session variable, then do so inside Nix instead. The above
         example then becomes
         <programlisting language="nix">
-          home.sessionVariables = {
-            FOO = "Hello";
-            BAR = "''${config.home.sessionVariables.FOO} World!";
-          };
+        home.sessionVariables = {
+          FOO = "Hello";
+          BAR = "''${config.home.sessionVariables.FOO} World!";
+        };
         </programlisting>
       '';
     };

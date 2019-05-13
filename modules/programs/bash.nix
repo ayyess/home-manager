@@ -81,12 +81,12 @@ in
 
       shellAliases = mkOption {
         default = {};
+        type = types.attrsOf types.str;
         example = { ll = "ls -l"; ".." = "cd .."; };
         description = ''
           An attribute set that maps aliases (the top level attribute names in
           this option) to command strings or directly to build outputs.
         '';
-        type = types.attrs;
       };
 
       enableAutojump = mkOption {
