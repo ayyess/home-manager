@@ -1098,6 +1098,21 @@ in
           A new module is available: 'programs.mpv'.
         '';
       }
+
+      {
+        time = "2019-05-30T17:49:29+00:00";
+        condition = hostPlatform.isLinux;
+        message = ''
+          A new module is available: 'services.xsuspender'.
+        '';
+      }
+
+      {
+        time = "2019-06-03T21:47:10+00:00";
+        message = ''
+          A new module is available: 'programs.gpg'.
+        '';
+      }
     ];
   };
 }
