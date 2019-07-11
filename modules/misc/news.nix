@@ -1138,6 +1138,12 @@ in
         '';
       }
 
+      {
+        time = "2019-07-02T09:27:56+00:00";
+        message = ''
+          A new module is available: 'programs.broot'.
+        '';
+      }
     ];
   };
 }
