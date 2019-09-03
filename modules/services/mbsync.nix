@@ -22,7 +22,7 @@ in
     package = mkOption {
       type = types.package;
       default = pkgs.isync;
-      defaultText = "pkgs.isync";
+      defaultText = literalExample "pkgs.isync";
       example = literalExample "pkgs.isync";
       description = "The package to use for the mbsync binary.";
     };
@@ -83,7 +83,6 @@ in
     systemd.user.services.mbsync = {
       Unit = {
         Description = "mbsync mailbox synchronization";
-        PartOf = [ "network-online.target" ];
       };
 
       Service = {
