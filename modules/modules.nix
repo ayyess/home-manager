@@ -36,6 +36,8 @@ let
     (loadModule ./misc/qt.nix { })
     (loadModule ./misc/submodule-support.nix { })
     (loadModule ./misc/version.nix { })
+    (loadModule ./misc/xdg-mime-apps.nix { condition = hostPlatform.isLinux; })
+    (loadModule ./misc/xdg-user-dirs.nix { condition = hostPlatform.isLinux; })
     (loadModule ./misc/xdg.nix { })
     (loadModule ./programs/afew.nix { })
     (loadModule ./programs/alacritty.nix { })
