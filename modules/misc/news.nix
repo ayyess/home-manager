@@ -1192,6 +1192,28 @@ in
           Specifying them as strings is deprecated.
         '';
       }
+
+      {
+        time = "2019-09-17T19:33:49+00:00";
+        condition = hostPlatform.isLinux;
+        message = ''
+          A new module is available: 'services.sxhkd'.
+        '';
+      }
+
+      {
+        time = "2019-09-26T21:05:24+00:00";
+        message = ''
+          A new module is available: 'programs.starship'.
+        '';
+      }
+
+      {
+        time = "2019-09-26T21:47:13+00:00";
+        message = ''
+          A new module is available: 'programs.rtorrent'.
+        '';
+      }
     ];
   };
 }
